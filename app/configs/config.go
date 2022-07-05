@@ -1,31 +1,30 @@
 package configs
 
 import (
-	"time"
+	"fmt"
+	"io/ioutil"
 
-	"github.com/gofiber/fiber/v2/middleware/session"
+	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
-	AuthKey    string
-	UserIDKey  string
-	BcryptCost int
-	Port       string
+type AllConfig struct {
+	ServiceConfig      ServiceConfig      `yaml:"service"`
+	SessionStoreConfig SessionStoreConfig `yaml:"session_store"`
+	DBConfig           DBConfig           `yaml:"db"`
 }
 
-func NewDefaultSessionStore() *session.Store {
-	return session.New(session.Config{
-		CookieHTTPOnly: true,
-		CookieSecure:   false, // for https
-		Expiration:     time.Hour * 5,
-	})
-}
-
-func NewDefaultServiceConf() Config {
-	return Config{
-		AuthKey:    "authenticated",
-		UserIDKey:  "user_id",
-		BcryptCost: 14,
-		Port:       ":5000",
+func GetConfigFromFile[T any](filename string) (*T, error) {
+	buf, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("error reading the file %q: %s", filename, err)
 	}
+
+	c := new(T)
+
+	err = yaml.Unmarshal(buf, c)
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling a config file %q: %v", filename, err)
+	}
+
+	return c, nil
 }

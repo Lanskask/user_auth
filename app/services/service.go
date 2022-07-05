@@ -14,7 +14,7 @@ import (
 type Service struct {
 	db    model.IDB
 	store *session.Store
-	conf  configs.Config
+	conf  configs.ServiceConfig
 }
 
 type user struct {
@@ -23,7 +23,7 @@ type user struct {
 	Password string `json:"password"`
 }
 
-func NewService(db model.IDB, store *session.Store, conf configs.Config) *Service {
+func NewService(db model.IDB, store *session.Store, conf configs.ServiceConfig) *Service {
 	return &Service{
 		store: store,
 		db:    db,

@@ -1,0 +1,7 @@
+db:
+  host: "host"
+  port: "port"
+  user: "user"
+  password: "password"
+  dbname: "dbname"
+  sslmode: "sslmode"

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"configs"
 	"database/sql"
 	"fmt"
 	"strconv"
@@ -21,13 +22,7 @@ type IDB interface {
 	Close() error
 }
 
-var currentDB IDB // for singleton
-
-func NewDB(conf DBConfig) (IDB, error) {
-	if currentDB != nil {
-		return currentDB, nil
-	}
-
+func NewDB(conf configs.DBConfig) (IDB, error) {
 	dsn := DNSByConfig(conf)
 	db, err := sql.Open("postgres", dsn)
 
@@ -39,8 +34,7 @@ func NewDB(conf DBConfig) (IDB, error) {
 		return &DB{}, fmt.Errorf("cann't ping a DB: %s", err)
 	}
 
-	currentDB = &DB{db: db}
-	return currentDB, nil
+	return &DB{db: db}, nil
 }
 
 func (db *DB) CreateUser(user *User) (string, error) {
@@ -105,14 +99,14 @@ func (db *DB) Close() error {
 	return db.db.Close()
 }
 
-func DNSByConfig(conf DBConfig) string {
+func DNSByConfig(conf configs.DBConfig) string {
 	return fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		conf.host,
-		conf.port,
-		conf.user,
-		conf.password,
-		conf.dbname,
-		conf.sslmode,
+		conf.Host,
+		conf.Port,
+		conf.User,
+		conf.Password,
+		conf.Dbname,
+		conf.Sslmode,
 	)
 }

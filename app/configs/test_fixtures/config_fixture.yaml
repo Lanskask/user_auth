@@ -1,0 +1,16 @@
+service:
+  auth_key: "authenticated"
+  user_id_key: "user_id"
+  bcrypt_cost: 14
+  port: ":5000"
+session_store:
+  cookie_http_only: true
+  cookie_secure: false
+  expiration_in_hours: 5
+db:
+  host: "host"
+  port: "port"
+  user: "user"
+  password: "password"
+  dbname: "dbname"
+  sslmode: "sslmode"
