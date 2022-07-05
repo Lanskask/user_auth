@@ -13,7 +13,7 @@ type AllConfig struct {
 	DBConfig           DBConfig           `yaml:"db"`
 }
 
-func getConfigFromFile[T any](filename string) (*T, error) {
+func GetConfigFromFile[T any](filename string) (*T, error) {
 	buf, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("error reading the file %q: %s", filename, err)

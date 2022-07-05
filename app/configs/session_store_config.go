@@ -12,10 +12,10 @@ type SessionStoreConfig struct {
 	Expiration     int  `yaml:"expiration_in_hours"`
 }
 
-func NewDefaultSessionStore() *session.Store {
+func NewSessionStore(conf SessionStoreConfig) *session.Store {
 	return session.New(session.Config{
-		CookieHTTPOnly: true,
-		CookieSecure:   false, // for https
-		Expiration:     time.Hour * 5,
+		CookieHTTPOnly: conf.CookieHTTPOnly,
+		CookieSecure:   conf.CookieSecure, // for https
+		Expiration:     time.Hour * time.Duration(conf.Expiration),
 	})
 }

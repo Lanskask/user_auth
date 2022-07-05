@@ -8,14 +8,3 @@ type DBConfig struct {
 	Dbname   string `yaml:"dbname"`
 	Sslmode  string `yaml:"sslmode"`
 }
-
-func NewDefaultDBConfig() DBConfig {
-	return DBConfig{
-		Host:     "localhost",
-		Port:     "5432",
-		User:     "postgres",
-		Password: "postgres",
-		Dbname:   "postgres",
-		Sslmode:  "disable",
-	}
-}

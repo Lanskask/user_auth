@@ -38,13 +38,13 @@ func Test_readConf(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getConfigFromFile[AllConfig]("./test_fixtures/config_fixture.yaml")
+			got, err := GetConfigFromFile[AllConfig]("./test_fixtures/config_fixture.yaml")
 			if (err != nil) != tt.wantErr {
-				t.Errorf("getConfigFromFile() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetConfigFromFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, &tt.want) {
-				t.Errorf("getConfigFromFile() \n\tgot = %#v, \n\twant %#v", got, &tt.want)
+				t.Errorf("GetConfigFromFile() \n\tgot = %#v, \n\twant %#v", got, &tt.want)
 			}
 		})
 	}
@@ -71,13 +71,13 @@ func Test_DBTest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getConfigFromFile[DBConfig]("./test_fixtures/config_fixture.yaml")
+			got, err := GetConfigFromFile[DBConfig]("./test_fixtures/config_fixture.yaml")
 			if (err != nil) != tt.wantErr {
-				t.Errorf("getConfigFromFile() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetConfigFromFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, &tt.want) {
-				t.Errorf("getConfigFromFile() \n\tgot = %#v, \n\twant %#v", got, &tt.want)
+				t.Errorf("GetConfigFromFile() \n\tgot = %#v, \n\twant %#v", got, &tt.want)
 			}
 		})
 	}

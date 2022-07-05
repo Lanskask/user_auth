@@ -12,15 +12,17 @@ import (
 )
 
 func main() {
-	serviceConf := configs.NewDefaultServiceConf()
-	dbConf := configs.NewDefaultDBConfig()
+	conf, err := configs.GetConfigFromFile[configs.AllConfig]("config.yaml")
+	if err != nil {
+		log.Fatalf("error loading configs: %s", err)
+	}
 
-	store := configs.NewDefaultSessionStore()
+	store := configs.NewSessionStore(conf.SessionStoreConfig)
 	rout := fiber.New()
 
-	mware := middleware.NewMiddleware(serviceConf, store)
+	mware := middleware.NewMiddleware(conf.ServiceConfig, store)
 
-	db, err := model.NewDB(dbConf)
+	db, err := model.NewDB(conf.DBConfig)
 	defer func(db model.IDB) {
 		err := db.Close()
 		if err != nil {
@@ -31,9 +33,9 @@ func main() {
 		log.Fatalf("error initializing DB: %s", err)
 	}
 
-	serv := services.NewService(db, store, serviceConf)
+	serv := services.NewService(db, store, conf.ServiceConfig)
 
-	Router := router.NewRouter(serviceConf, store, rout, mware.AuthMiddleware, serv)
+	Router := router.NewRouter(conf.ServiceConfig, store, rout, mware.AuthMiddleware, serv)
 	Router.Setup()
 	Router.Run()
 }

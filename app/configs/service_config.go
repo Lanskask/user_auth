@@ -6,12 +6,3 @@ type ServiceConfig struct {
 	BcryptCost int    `yaml:"bcrypt_cost"`
 	Port       string `yaml:"port"`
 }
-
-func NewDefaultServiceConf() ServiceConfig {
-	return ServiceConfig{
-		AuthKey:    "authenticated",
-		UserIDKey:  "user_id",
-		BcryptCost: 14,
-		Port:       ":5000",
-	}
-}
