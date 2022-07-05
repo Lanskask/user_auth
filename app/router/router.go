@@ -11,7 +11,7 @@ import (
 )
 
 type Router struct {
-	conf       configs.Config
+	conf       configs.ServiceConfig
 	store      *session.Store
 	router     *fiber.App
 	middleware fiber.Handler
@@ -19,7 +19,7 @@ type Router struct {
 }
 
 func NewRouter(
-	conf configs.Config,
+	conf configs.ServiceConfig,
 	store *session.Store,
 	router *fiber.App,
 	middleware fiber.Handler,

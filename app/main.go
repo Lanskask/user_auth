@@ -13,7 +13,7 @@ import (
 
 func main() {
 	serviceConf := configs.NewDefaultServiceConf()
-	dbConf := model.NewDefaultDBConfig()
+	dbConf := configs.NewDefaultDBConfig()
 
 	store := configs.NewDefaultSessionStore()
 	rout := fiber.New()

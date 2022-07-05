@@ -10,11 +10,11 @@ import (
 )
 
 type Middleware struct {
-	config configs.Config
+	config configs.ServiceConfig
 	store  *session.Store
 }
 
-func NewMiddleware(config configs.Config, store *session.Store) *Middleware {
+func NewMiddleware(config configs.ServiceConfig, store *session.Store) *Middleware {
 	return &Middleware{config: config, store: store}
 }
 
