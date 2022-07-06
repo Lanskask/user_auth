@@ -1,6 +1,9 @@
-# user_auth Example with Postgres and BCrypt
+# User Authentication with Fiber, Postgres and BCrypt
 
-## Test requests 
+There should be a Web UI, but I'm not a frontend developer, that's why it doesn't work properly. And I desided to remove it.
+
+
+## Test requests
 
 ```
 POST: 
