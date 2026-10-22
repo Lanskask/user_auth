@@ -2,6 +2,7 @@
 package httpapi
 
 import (
+	"cmp"
 	"context"
 	"io/fs"
 	"log/slog"
@@ -30,6 +31,8 @@ type Options struct {
 	DB           Pinger
 	Logger       *slog.Logger
 	CookieSecure bool
+	// RateBurst is the per-client allowance for sign-in and registration; zero means 10.
+	RateBurst int
 	// Static is the built frontend; nil disables static serving (API only).
 	Static fs.FS
 }
@@ -43,7 +46,8 @@ type server struct {
 func New(opts Options) http.Handler {
 	s := &server{opts: opts, log: opts.Logger}
 
-	authLimit := newRateLimiter(10, 6*time.Second) // burst of 10, then one request per 6 s per client IP
+	burst := cmp.Or(opts.RateBurst, 10)
+	authLimit := newRateLimiter(burst, 6*time.Second) // after the burst, one request per 6 s per client IP
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", s.healthz)

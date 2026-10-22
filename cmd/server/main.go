@@ -57,7 +57,7 @@ func run(log *slog.Logger) error {
 	srv := &http.Server{
 		Addr: cfg.Addr,
 		Handler: httpapi.New(httpapi.Options{
-			Auth: svc, DB: db, Logger: log, CookieSecure: cfg.CookieSecure, Static: static,
+			Auth: svc, DB: db, Logger: log, CookieSecure: cfg.CookieSecure, RateBurst: cfg.RateBurst, Static: static,
 		}),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,

@@ -1,4 +1,4 @@
-.PHONY: setup run run-api test test-web lint build web db-up db-down docker-up docker-down
+.PHONY: setup run run-api test test-web test-e2e lint build web db-up db-down docker-up docker-down
 
 COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo docker-compose)
 DB_URL ?= postgres://postgres:postgres@localhost:5432/user_auth?sslmode=disable
@@ -24,6 +24,9 @@ test: ## Go tests (integration tests use TEST_DATABASE_URL, default is the local
 
 test-web:
 	cd web && npm test
+
+test-e2e: web db-up ## Playwright browser tests against the real server (builds the UI, starts it on :8081)
+	cd web && npx playwright install chromium && DB_URL="$(DB_URL)" npm run e2e
 
 lint:
 	go vet ./...
