@@ -256,7 +256,7 @@ dd {
 
 @media (min-width: 40rem) {
   .profile {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 2fr 1.2fr 0.6fr;
   }
   .facts div {
     grid-template-columns: 9rem 1fr;

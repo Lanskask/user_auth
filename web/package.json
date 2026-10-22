@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "find static -mindepth 1 ! -name .gitkeep -delete",
+    "prebuild": "mkdir -p static && find static -mindepth 1 ! -name .gitkeep -delete",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "lint": "eslint . && prettier --check src e2e *.ts",

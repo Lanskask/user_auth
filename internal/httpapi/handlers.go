@@ -108,7 +108,7 @@ func (s *server) cookieName() string {
 }
 
 func (s *server) sessionCookie(value string, expires time.Time) *http.Cookie {
-	c := &http.Cookie{
+	c := &http.Cookie{ //nolint:gosec // Secure is configurable so plain-http local development works
 		Name:     s.cookieName(),
 		Value:    value,
 		Path:     "/",

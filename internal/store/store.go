@@ -49,7 +49,7 @@ func Open(ctx context.Context, url string) (*Store, error) {
 
 func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	db := stdlib.OpenDBFromPool(pool)
-	defer db.Close()
+	defer func() { _ = db.Close() }() // a *sql.DB view of the pool; the pool itself is closed by Store.Close
 	return runMigrations(ctx, db)
 }
 

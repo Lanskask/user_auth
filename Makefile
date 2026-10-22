@@ -1,4 +1,4 @@
-.PHONY: setup run run-api test test-web test-e2e lint build web db-up db-down docker-up docker-down
+.PHONY: setup run run-api test test-web test-e2e screenshots lint build web db-up db-down docker-up docker-down
 
 COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo docker-compose)
 DB_URL ?= postgres://postgres:postgres@localhost:5432/user_auth?sslmode=disable
@@ -44,3 +44,5 @@ docker-up:
 
 docker-down:
 	$(COMPOSE) --profile app down -v
+screenshots: ## regenerate docs/screenshots (needs a server on :8080, e.g. make run-api after make web)
+	cd web && node scripts/screenshots.mjs
