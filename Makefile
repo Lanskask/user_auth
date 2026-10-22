@@ -1,5 +1,6 @@
 .PHONY: setup run dev test test-web lint build web db-up db-down docker-up docker-down
 
+COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo docker-compose)
 DB_URL ?= postgres://postgres:postgres@localhost:5432/user_auth?sslmode=disable
 
 setup: ## install frontend deps and start Postgres
@@ -7,10 +8,10 @@ setup: ## install frontend deps and start Postgres
 	$(MAKE) db-up
 
 db-up:
-	docker compose up -d --wait db
+	$(COMPOSE) up -d --wait db
 
 db-down:
-	docker compose down
+	$(COMPOSE) down
 
 run: web ## build the frontend, then run the single-binary server against local Postgres
 	AUTH_DATABASE_URL=$(DB_URL) AUTH_COOKIE_SECURE=false go run ./cmd/server
@@ -39,7 +40,7 @@ build: web
 	CGO_ENABLED=0 go build -trimpath -o bin/server ./cmd/server
 
 docker-up:
-	docker compose --profile app up --build -d --wait
+	$(COMPOSE) --profile app up --build -d --wait
 
 docker-down:
-	docker compose --profile app down -v
+	$(COMPOSE) --profile app down -v
