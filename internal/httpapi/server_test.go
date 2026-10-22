@@ -130,7 +130,8 @@ func TestMeRequiresSession(t *testing.T) {
 }
 
 func TestLogoutClearsCookie(t *testing.T) {
-	rec := do(newTestServer(stubAuth{}, stubDB{}), "POST", "/api/v1/auth/logout", "", map[string]string{"Cookie": "session=tok"})
+	hdr := map[string]string{"Cookie": "session=tok", "Origin": "http://example.com"}
+	rec := do(newTestServer(stubAuth{}, stubDB{}), "POST", "/api/v1/auth/logout", "", hdr)
 	c := rec.Result().Cookies()
 	if rec.Code != http.StatusNoContent || len(c) != 1 || c[0].MaxAge >= 0 {
 		t.Fatalf("status = %d cookies = %+v", rec.Code, c)
@@ -146,6 +147,20 @@ func TestCrossOriginPostRefused(t *testing.T) {
 	hdr["Origin"] = "http://example.com"
 	if rec := do(h, "POST", "/api/v1/auth/logout", "", hdr); rec.Code != http.StatusNoContent {
 		t.Fatalf("same-origin: %d", rec.Code)
+	}
+	hdr["Origin"] = "https://example.com" // same host, wrong scheme for a non-Secure deployment
+	if rec := do(h, "POST", "/api/v1/auth/logout", "", hdr); rec.Code != http.StatusForbidden {
+		t.Fatalf("scheme mismatch: %d", rec.Code)
+	}
+}
+
+func TestPostWithSessionCookieButNoOriginRefused(t *testing.T) {
+	h := newTestServer(stubAuth{}, stubDB{})
+	if rec := do(h, "POST", "/api/v1/auth/logout", "", map[string]string{"Cookie": "session=tok"}); rec.Code != http.StatusForbidden {
+		t.Fatalf("cookie without Origin: %d", rec.Code)
+	}
+	if rec := do(h, "POST", "/api/v1/auth/logout", "", nil); rec.Code != http.StatusNoContent {
+		t.Fatalf("no cookie, no Origin (curl): %d", rec.Code)
 	}
 }
 

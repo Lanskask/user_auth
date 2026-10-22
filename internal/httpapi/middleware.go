@@ -84,20 +84,28 @@ func securityHeaders(secure bool) middleware {
 	}
 }
 
-// originCheck is the CSRF defence for cookie auth: a state-changing request that a browser marks with an Origin of
-// another site is refused. Together with SameSite=Lax cookies and JSON-only bodies this blocks cross-site forgery.
-// Requests without Origin (curl, server-to-server) are allowed because browsers always send it on cross-site POSTs.
-func originCheck(next http.Handler) http.Handler {
+// originCheck is the CSRF defence for cookie auth. A state-changing request must carry an Origin whose scheme and host
+// match this server; the scheme is https when cookies are Secure. A request with no Origin is refused if it carries a
+// session cookie (browsers always send Origin on cross-site POSTs, so a cookie without one is not a normal browser
+// request). Cookieless requests such as curl or registration from scripts are allowed.
+func (s *server) originCheck(next http.Handler) http.Handler {
+	scheme := "http"
+	if s.opts.CookieSecure {
+		scheme = "https"
+	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet, http.MethodHead, http.MethodOptions:
 		default:
-			if o := r.Header.Get("Origin"); o != "" {
-				u, err := url.Parse(o)
-				if err != nil || u.Host != r.Host {
-					writeError(w, http.StatusForbidden, "bad_origin", "cross-origin request refused", nil)
+			o := r.Header.Get("Origin")
+			if o == "" {
+				if _, err := r.Cookie(s.cookieName()); err == nil {
+					writeError(w, http.StatusForbidden, "bad_origin", "missing Origin header", nil)
 					return
 				}
+			} else if u, err := url.Parse(o); err != nil || u.Host != r.Host || u.Scheme != scheme {
+				writeError(w, http.StatusForbidden, "bad_origin", "cross-origin request refused", nil)
+				return
 			}
 		}
 		next.ServeHTTP(w, r)

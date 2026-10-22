@@ -68,7 +68,7 @@ func New(opts Options) http.Handler {
 		requestID,
 		s.accessLog,
 		securityHeaders(opts.CookieSecure),
-		originCheck,
+		s.originCheck,
 		bodyLimit(16<<10),
 	)
 }

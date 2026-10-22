@@ -59,9 +59,11 @@ now always runs one bcrypt comparison and returns the same 401 body for both fai
 
 Cookie auth needs CSRF protection. Browsers always send `Origin` on cross-site `POST` requests, so the middleware
 refuses any state-changing request whose `Origin` host differs from `Host`. Together with `SameSite=Lax` cookies and
-JSON-only bodies this meets the OWASP guidance without a token round trip. Requests with no `Origin` (curl, server to
-server) are allowed because they cannot be driven by a victim's browser. The old `AllowOrigins: "*"` with credentials
-is gone: the UI is same-origin in production and proxied by Vite in development, so CORS is not needed at all.
+JSON-only bodies this meets the OWASP guidance without a token round trip. The scheme must match too (https when
+cookies are `Secure`). A request with no `Origin` is refused if it carries a session cookie; cookieless requests (curl,
+server to server) are allowed because a victim's browser cannot be driven through them. The old
+`AllowOrigins: "*"` with credentials is gone: the UI is same-origin in production and proxied by Vite in development,
+so CORS is not needed at all.
 
 ## 8. In-memory per-IP rate limiter
 
