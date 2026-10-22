@@ -1,4 +1,4 @@
-.PHONY: setup run dev test test-web lint build web db-up db-down docker-up docker-down
+.PHONY: setup run run-api test test-web lint build web db-up db-down docker-up docker-down
 
 COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo docker-compose)
 DB_URL ?= postgres://postgres:postgres@localhost:5432/user_auth?sslmode=disable
@@ -16,10 +16,7 @@ db-down:
 run: web ## build the frontend, then run the single-binary server against local Postgres
 	AUTH_DATABASE_URL=$(DB_URL) AUTH_COOKIE_SECURE=false go run ./cmd/server
 
-dev: ## Go API on :8080 plus Vite dev server on :5173 (proxying /api)
-	@echo "Run in two terminals: 'make run-api' and 'cd web && npm run dev'"
-
-run-api:
+run-api: ## Go API only, on :8080 (pair with `cd web && npm run dev`)
 	AUTH_DATABASE_URL=$(DB_URL) AUTH_COOKIE_SECURE=false go run ./cmd/server
 
 test: ## Go tests (integration tests use TEST_DATABASE_URL, default is the local compose DB)

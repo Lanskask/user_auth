@@ -30,7 +30,9 @@ var (
 // ValidationError maps a field name to a human-readable problem.
 type ValidationError map[string]string
 
-func (v ValidationError) Error() string { return fmt.Sprintf("invalid input: %v", map[string]string(v)) }
+func (v ValidationError) Error() string {
+	return fmt.Sprintf("invalid input: %v", map[string]string(v))
+}
 
 // User is the public view of an account; the password hash never leaves the store.
 type User struct {
