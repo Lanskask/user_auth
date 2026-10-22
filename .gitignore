@@ -5,5 +5,8 @@ coverage.out
 
 # frontend
 web/node_modules/
-web/dist/*
-!web/dist/.gitkeep
+web/static/*
+!web/static/.gitkeep
+web/*.tsbuildinfo
+web/test-results/
+web/playwright-report/

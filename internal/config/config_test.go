@@ -19,19 +19,20 @@ func TestLoad(t *testing.T) {
 		{
 			name: "defaults",
 			env:  map[string]string{"AUTH_DATABASE_URL": "postgres://x"},
-			want: Config{Addr: ":8080", DatabaseURL: "postgres://x", CookieSecure: true, BcryptCost: 12, SessionTTL: 24 * time.Hour},
+			want: Config{Addr: ":8080", DatabaseURL: "postgres://x", CookieSecure: true, BcryptCost: 12, SessionTTL: 24 * time.Hour, RateBurst: 10},
 		},
 		{
 			name: "overrides",
 			env: map[string]string{
 				"AUTH_DATABASE_URL": "postgres://x", "AUTH_ADDR": ":9", "AUTH_COOKIE_SECURE": "false",
-				"AUTH_BCRYPT_COST": "10", "AUTH_SESSION_TTL": "1h",
+				"AUTH_BCRYPT_COST": "10", "AUTH_SESSION_TTL": "1h", "AUTH_RATE_LIMIT_BURST": "50",
 			},
-			want: Config{Addr: ":9", DatabaseURL: "postgres://x", CookieSecure: false, BcryptCost: 10, SessionTTL: time.Hour},
+			want: Config{Addr: ":9", DatabaseURL: "postgres://x", CookieSecure: false, BcryptCost: 10, SessionTTL: time.Hour, RateBurst: 50},
 		},
 		{name: "missing database url", env: map[string]string{}, wantErr: true},
 		{name: "bad bool", env: map[string]string{"AUTH_DATABASE_URL": "x", "AUTH_COOKIE_SECURE": "maybe"}, wantErr: true},
 		{name: "cost too low", env: map[string]string{"AUTH_DATABASE_URL": "x", "AUTH_BCRYPT_COST": "4"}, wantErr: true},
+		{name: "bad burst", env: map[string]string{"AUTH_DATABASE_URL": "x", "AUTH_RATE_LIMIT_BURST": "0"}, wantErr: true},
 		{name: "bad ttl", env: map[string]string{"AUTH_DATABASE_URL": "x", "AUTH_SESSION_TTL": "-1h"}, wantErr: true},
 	}
 

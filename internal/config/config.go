@@ -15,6 +15,8 @@ type Config struct {
 	CookieSecure bool
 	BcryptCost   int
 	SessionTTL   time.Duration
+	// RateBurst is how many sign-in/registration attempts one client may make before being throttled.
+	RateBurst int
 }
 
 // Load reads the configuration through getenv (usually os.Getenv) so tests can inject values.
@@ -25,6 +27,7 @@ func Load(getenv func(string) string) (Config, error) {
 		CookieSecure: true,
 		BcryptCost:   12,
 		SessionTTL:   24 * time.Hour,
+		RateBurst:    10,
 	}
 
 	if cfg.DatabaseURL == "" {
@@ -53,6 +56,14 @@ func Load(getenv func(string) string) (Config, error) {
 			return Config{}, fmt.Errorf("AUTH_SESSION_TTL must be a positive duration, got %q", v)
 		}
 		cfg.SessionTTL = d
+	}
+
+	if v := getenv("AUTH_RATE_LIMIT_BURST"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 {
+			return Config{}, fmt.Errorf("AUTH_RATE_LIMIT_BURST must be a positive integer, got %q", v)
+		}
+		cfg.RateBurst = n
 	}
 
 	return cfg, nil
