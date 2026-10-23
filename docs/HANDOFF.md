@@ -26,8 +26,9 @@ Written 2026-10-22 when the work was paused. Everything below is state a fresh s
 - `terraform apply` creates cloud resources, so per the user's rules show the commands and wait for their go-ahead.
 - `make tf-apply` runs Neon first, then Cloud Run, passing the Neon connection string between the two roots as
   `TF_VAR_database_url`. It is two applies in sequence, not one dependency graph. It approves automatically
-  (`-auto-approve`) because the user asked; `make tf-apply APPROVE=` brings the prompt back. `tf-destroy` always asks. The first Cloud Run apply uses
-  Google's hello image; CI is meant to replace it (`ignore_changes` on the image).
+  (`-auto-approve`) because the user asked; `make tf-apply APPROVE=` brings the prompt back. `tf-destroy` always
+  asks. The first Cloud Run apply uses Google's hello image; CI is meant to replace it (`ignore_changes` on the
+  image).
 - The database URL lands in `infra/cloudrun`'s local, git-ignored state file. Acceptable for a demo; a remote state
   bucket is the upgrade.
 - The user's Chrome shows many `BG.js` errors and a 401 on `/api/v1/me`. Neither is a bug: the first comes from a
