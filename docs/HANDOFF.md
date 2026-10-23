@@ -5,15 +5,16 @@ Written 2026-10-22 when the work was paused. Everything below is state a fresh s
 ## Where things stand
 
 - The app, tests, Docker image, CI and docs are done and merged to `main` (PRs #3 to #10; history in `git log`).
-  The default branch on GitHub is `main`; `master` is gone from the settings but may still exist as a branch, and the
-  empty PR #13 (`master` to `main`) was recommended for closing, not yet closed.
-- Open PR #14 (`fix/favicon`) adds an SVG favicon. Not merged. The UI is embedded in the Go binary, so a server
-  started before the merge shows Chrome's globe icon.
-- Local branch `feature/cloud-run-terraform` holds three unpushed commits: Neon Terraform (`infra/neon/`), Cloud Run
-  Terraform (`infra/cloudrun/`) and the `make tf-*` targets with a `make help` default goal. No PR yet.
+  GitHub's default branch is `main`. The empty PR #13 (`master` to `main`) is closed. The remote branches `master` and
+  `feature/*` still exist; their content is already in `main`, so they can be deleted whenever the user likes.
+- Open PR #14 (`fix/favicon`) adds an SVG favicon. Not merged, still needed. The UI is embedded in the Go binary, so
+  a server started before the merge shows Chrome's globe icon.
+- Branch `feature/cloud-run-terraform` is pushed to GitHub and has no PR yet. It holds the Neon Terraform
+  (`infra/neon/`), the Cloud Run Terraform (`infra/cloudrun/`), the `make tf-*` targets with a `make help` default
+  goal, the move of `DECISIONS.md` to `docs/DECISIONS.md` (README link updated) and this file.
 - Nothing has been applied. No Neon project `user-auth`, no Cloud Run service, no secret exists yet.
-- The working tree has the user's own uncommitted move of `DECISIONS.md` to `docs/DECISIONS.md`. Leave it alone and
-  do not commit it unless asked; README still links the old path.
+- Local `main` still tracks `origin/master` and has diverged. Repair with
+  `git checkout main && git branch -u origin/main && git reset --hard origin/main` once nothing is pending on it.
 
 ## Decisions made this session
 
@@ -24,7 +25,8 @@ Written 2026-10-22 when the work was paused. Everything below is state a fresh s
   `aws-us-east-2`. The project and region are Terraform variables, so they can change.
 - `terraform apply` creates cloud resources, so per the user's rules show the commands and wait for their go-ahead.
 - `make tf-apply` runs Neon first, then Cloud Run, passing the Neon connection string between the two roots as
-  `TF_VAR_database_url`. It is two applies in sequence, not one dependency graph. The first Cloud Run apply uses
+  `TF_VAR_database_url`. It is two applies in sequence, not one dependency graph. It approves automatically
+  (`-auto-approve`) because the user asked; `make tf-apply APPROVE=` brings the prompt back. `tf-destroy` always asks. The first Cloud Run apply uses
   Google's hello image; CI is meant to replace it (`ignore_changes` on the image).
 - The database URL lands in `infra/cloudrun`'s local, git-ignored state file. Acceptable for a demo; a remote state
   bucket is the upgrade.
@@ -33,14 +35,15 @@ Written 2026-10-22 when the work was paused. Everything below is state a fresh s
 
 ## Next steps, in order
 
-1. User merges PR #14, closes PR #13, and pushes `feature/cloud-run-terraform` (ask before pushing and opening a PR).
-2. User runs `make tf-init`, `make tf-plan`, then `make tf-apply`. It needs `NEON_API_KEY` in the environment and
-   `gcloud auth application-default login`. `make tf-plan` fails for Cloud Run until Neon has been applied once.
+1. User merges PR #14, then opens a PR for `feature/cloud-run-terraform` (ask before opening it).
+2. User runs `make tf-init`, then `make tf-apply`. It needs `NEON_API_KEY` in the environment and
+   `gcloud auth application-default login`. Run `make tf-plan` only after Neon exists, since the Cloud Run plan reads
+   Neon's output. Because apply is automatic, review the plan first if in doubt.
 3. Add a CI deploy job to `.github/workflows/ci.yml`: on push to `main`, after the existing jobs pass, build the
    Docker image, push it to the Artifact Registry repo (`terraform -chdir=infra/cloudrun output image_repository`) and
    deploy it to the `user-auth` Cloud Run service. Use keyless GitHub OIDC (Workload Identity Federation); this needs
    one-time `gcloud` setup that the user runs themselves.
-4. Add a short README section on deployment and a `DECISIONS.md` entry for the Cloud Run plus Neon choice.
+4. Add a short README section on deployment and a `docs/DECISIONS.md` entry for the Cloud Run plus Neon choice.
 
 ## Suggested skills
 
