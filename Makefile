@@ -56,6 +56,8 @@ screenshots: ## regenerate docs/screenshots (needs a server on :8080, e.g. make 
 # Terraform. Needs NEON_API_KEY and `gcloud auth application-default login`. Neon first: Cloud Run reads its output.
 TF_NEON := infra/neon
 TF_RUN := infra/cloudrun
+# tf-apply answers yes by default; run `make tf-apply APPROVE=` to be asked. tf-destroy always asks.
+APPROVE ?= -auto-approve
 TF_DB_URL = TF_VAR_database_url="$$(terraform -chdir=$(TF_NEON) output -raw database_url)"
 
 tf-init: ## terraform init for Neon and Cloud Run
@@ -67,8 +69,8 @@ tf-plan: ## show what tf-apply would change (apply Neon once before planning Clo
 	$(TF_DB_URL) terraform -chdir=$(TF_RUN) plan
 
 tf-apply: ## create or update Neon Postgres, then the Cloud Run service (creates cloud resources)
-	terraform -chdir=$(TF_NEON) apply
-	$(TF_DB_URL) terraform -chdir=$(TF_RUN) apply
+	terraform -chdir=$(TF_NEON) apply $(APPROVE)
+	$(TF_DB_URL) terraform -chdir=$(TF_RUN) apply $(APPROVE)
 
 tf-destroy: ## tear down Cloud Run first, then Neon
 	$(TF_DB_URL) terraform -chdir=$(TF_RUN) destroy
