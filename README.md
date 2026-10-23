@@ -106,7 +106,7 @@ internal/config/       environment parsing
 web/                   React + TypeScript frontend (Vite), Vitest and Playwright tests
 ```
 
-Why things are the way they are is recorded in [DECISIONS.md](DECISIONS.md).
+Why things are the way they are is recorded in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Known limits
 
