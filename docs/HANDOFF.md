@@ -7,11 +7,13 @@ Written 2026-10-22 when the work was paused. Everything below is state a fresh s
 - The app, tests, Docker image, CI and docs are done and merged to `main` (PRs #3 to #10; history in `git log`).
   GitHub's default branch is `main`. The empty PR #13 (`master` to `main`) is closed. The remote branches `master` and
   `feature/*` still exist; their content is already in `main`, so they can be deleted whenever the user likes.
-- Open PR #14 (`fix/favicon`) adds an SVG favicon. Not merged, still needed. The UI is embedded in the Go binary, so
-  a server started before the merge shows Chrome's globe icon.
-- Branch `feature/cloud-run-terraform` is pushed to GitHub and has no PR yet. It holds the Neon Terraform
-  (`infra/neon/`), the Cloud Run Terraform (`infra/cloudrun/`), the `make tf-*` targets with a `make help` default
-  goal, the move of `DECISIONS.md` to `docs/DECISIONS.md` (README link updated) and this file.
+- PR #14 (SVG favicon) is merged into `main`. The UI is embedded in the Go binary, so a server started before that
+  merge shows Chrome's globe icon until it is rebuilt and restarted.
+- Open PRs, to be merged in this order with Squash or Rebase (merge commits are blocked on the repo):
+  - #15 `feature/neon-terraform` to `main`: the Neon Terraform in `infra/neon/`.
+  - #16 `feature/cloud-run-terraform` to `feature/neon-terraform`: the Cloud Run Terraform in `infra/cloudrun/`, the
+    `make tf-*` targets with a `make help` default goal, the move of `DECISIONS.md` to `docs/DECISIONS.md` (README
+    link updated) and this file. GitHub should retarget it to `main` after #15 merges; otherwise change its base.
 - Nothing has been applied. No Neon project `user-auth`, no Cloud Run service, no secret exists yet.
 - Local `main` still tracks `origin/master` and has diverged. Repair with
   `git checkout main && git branch -u origin/main && git reset --hard origin/main` once nothing is pending on it.
@@ -36,7 +38,7 @@ Written 2026-10-22 when the work was paused. Everything below is state a fresh s
 
 ## Next steps, in order
 
-1. User merges PR #14, then opens a PR for `feature/cloud-run-terraform` (ask before opening it).
+1. User merges #15, then #16.
 2. User runs `make tf-init`, then `make tf-apply`. It needs `NEON_API_KEY` in the environment and
    `gcloud auth application-default login`. Run `make tf-plan` only after Neon exists, since the Cloud Run plan reads
    Neon's output. Because apply is automatic, review the plan first if in doubt.
